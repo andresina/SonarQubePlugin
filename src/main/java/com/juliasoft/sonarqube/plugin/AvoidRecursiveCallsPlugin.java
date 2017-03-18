@@ -15,7 +15,7 @@ import java.util.List;
 @Rule(
 		  key = "AvoidRecursiveCallsPlugin",
 		  name = "Detect recursive calls",
-		  description = "Resursive calls are quite expensive and should always replaced by an iterative solution.",
+		  description = "Recursive calls are quite expensive and should always replaced by an iterative solution.",
 		  priority = Priority.CRITICAL,
 		  tags = {"efficiency"})
 public class AvoidRecursiveCallsPlugin extends IssuableSubscriptionVisitor {
@@ -52,9 +52,13 @@ public class AvoidRecursiveCallsPlugin extends IssuableSubscriptionVisitor {
 			
 			List<Type> partypes = callee.symbol().parameterTypes();
 			if(pars.size()!=partypes.size()) return false;
-			for(int i = 0; i < partypes.size(); i++)
-				if(! pars.get(i).symbolType().isSubtypeOf(partypes.get(i)))
+			for(int i = 0; i < partypes.size(); i++) {
+				
+				Type calleeType = partypes.get(i);
+				Type calledType = pars.get(i).symbolType();
+				if(! (calleeType.equals(calledType) || calledType.isSubtypeOf(calleeType)))
 					return false;
+			}
 			return true;
 		  }
   }
